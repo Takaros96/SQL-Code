@@ -1,0 +1,544 @@
+Insert into Doctor
+values(2,'mark',45,'male'),
+(3,'diana',55,'female');
+
+Insert into Patient values
+(1,'Harry',20,'California','flu',3),
+(2,'jack',30,'California','covid19',2);
+
+Insert into Room values
+(1,'premium','empty'),
+(2,'suite','reserved'),
+(3,'day care','reserved');
+
+insert into Check_IN_OUT values
+(1,2,'2020-1-20','2020-1-25'),
+(2,3,'2020-2-25','2020-3-30');
+
+update Check_IN_OUT
+set Leave_date=NULL
+WHERE Patient_ID=1 
+
+
+Delete from doctor
+where Doctor_ID=1;
+
+
+
+select Patient.Patient_Name,Patient.Patient_ID
+
+from Patient inner join Doctor on Patient.doctor_ID=Doctor.Doctor_ID
+where Doctor.Doctor_Age>35;
+
+-------------------------------------------------------------------
+in cross join the number of row in the first table is multiplied by the number of rows in the second table
+
+
+the union keyword combines the results of two or more select statements,however only the distinct values
+
+with union all ,all the results will be returned,even the duplicate ones,instead of only the distinct ones
+
+use bookstore;
+
+select o.itemid,c.customername
+from orderinfo as o
+inner join customer as c on o.customerid=c.customerid;
+
+select i.booktitle,a.authorname
+from item as i
+left join author as a on i.authorid=a.authorid
+order by i.booktitle;
+
+select e.firstname as employeename,em.firstname as managername
+from employees as e
+inner join employees as em
+on e.managerid=em.managerid;
+
+select *
+from item
+cross join author;
+
+select city from supplier
+union 
+select city from customer
+order by city;
+
+
+select city from supplier
+union all
+select city from customer
+order by city;
+
+select customername from customer
+union
+select concat(firstname," ",lastname) from employees;
+
+------------------------------------------------------------------------------------------------
+create database school;
+use school;
+
+create table test(
+test1 int
+);
+
+alter table test
+add test2 varchar(255);
+
+drop table test;
+
+create table info(
+id int not null auto_increment primary key,
+name varchar(255) not null,
+age int,
+class int
+);
+
+create table grades (
+id int not null auto_increment primary key,
+info_id int not null,
+arabic int,
+english int,
+foreign key(info_id) references info(id)
+);
+
+insert into info(name,age,class) values(
+'John Emma',10,2
+);
+
+insert into info(name,age,class) values(
+'Mohammed Ahmed',12,1),('Youssef Ahmed',11,2);
+
+
+select * from info;
+
+select age as student_age from info;
+
+select distinct class from info;
+
+
+update info 
+set age =5 
+where id=3;
+--------------------------------------------------------------------------
+SELECT supemailaddr
+from product as p join fabric as f on p.prodfabcode=f.FabCode
+		  join supplier as on f.FabSupplier=s.SupID
+where proddesc='Canoe Pack'
+
+
+
+
+
+
+
+select prodid,porddesc
+from producteast
+
+union
+
+select prodid,proddesc
+from productwest
+
+
+
+
+
+
+
+select prodid,porddesc
+from producteast
+
+intersect
+
+select prodid,proddesc
+from productwest
+
+
+
+select productdesc,prodprice
+from product
+where prodprice>(select avg(prodprice) from product)
+
+
+select custlastname,custfirstname
+from customer
+where custid in
+(select ordcutid
+from orders
+where orddate="2020/12/14")
+
+select proddesc,prodprice,prodcost,prodprice-prodcost as Profit
+from product
+
+select ordnum,prodid,discountlevel,(quantity*price) as amtdue,
+case dicountlevel
+when 'b' then (quantity*price)*0.95
+when 'c' then (quabtity*price)*0.9
+when 'd' then (quantity*price)*0.8
+else (quantity*price(
+end
+DueAfterDicount
+from orderitem
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------
+select customer_id,left(customer_id,2) as cust_group
+from customers;
+
+select first_name,length(first_name) as characters_num
+from employees
+where gender='M' and length(first_name)>5;
+
+select customer_id,right(customer_id,5) as cust_number
+from customers;
+
+select upper('Coursera-Guided-Projects');
+
+select lower('Coursera-Guided-Projects');
+
+
+BEGIN;
+
+update employees
+set first_name=upper(first_name)
+where emp_no='10001';
+
+ROLLBACK;
+
+select first_name,last_name,gender,REPLACE(gender,'M','Male') as Emp_Gender
+from employees;
+
+select customer_name,region,country,replace(lower(country),'united states','US') as New_Country
+from customers;
+
+select trim(trailing ' ' from ' Coursera-Guided-Projects ');
+
+select trim(leading ' ' from ' Coursera-Guided-Projects ');
+
+select trim(both ' ' from ' Coursera-Guided-Projects ');
+
+select trim(' Coursera-Guided-Projects ');
+
+select rtrim(' Coursera-Guided-Projects ');
+
+select ltrim(' Coursera-Guided-Projects ');
+
+select bracket_cust_id,trim(bracket_cust_id,'()') as cleaned_cust_id
+from customers;
+
+select emp_no,birth_date,first_name,last_name,first_name||' '||last_name as Full_Name
+from employees;
+
+select customer_name,city||', '||state||', '||country as Address
+from customers;
+
+select customer_name,concat(customer_name, ' is ',age,' years old') as desc_age
+from customers;
+
+select customer_id,customer_name
+substring(customer_id for 2)as cust_group
+from customers;
+
+select customer_id,customer_name,
+substring(customer_id for 2) as cust_group
+from customers
+where substring(customer_id for 2)='AB';
+
+select customer_id,customer_name,
+substring(customer_id from 4 for 5) as cust_number
+from customers
+where substring(customer_id for 2)='AB';
+
+select emp_no,birth_date,substring(cast(birth_date as char(10)) for 4) as year
+from employees;
+
+
+select emp_no,string_agg(dept_no,', ') as departments
+from dept_emp
+group by emp_no;
+
+select order_id,string_agg(product_id,', ') as prod_ordered 
+from sales
+group by order_id
+order by order_id;
+
+-------------------------------------------------------------------------------------
+#a window function performs a calculation across a set of tables
+#the over() clause is what makes it a window function
+
+select *,#Assign numbers to each row of the departments table
+row_number() over() as Row_N
+from departments
+order by Row_N asc;
+
+
+SELECT *,
+row_number() OVER() AS Row_N
+FROM departments
+WHERE division = 'Entertainment'
+ORDER BY Row_N ASC;
+
+
+the window order by does not have to match the order by in the output
+
+
+SELECT employee_id, first_name, hire_date, salary, department,
+ROW_NUMBER() OVER(ORDER BY hire_date ASC, salary DESC) AS Row_N
+FROM employees
+WHERE department = 'Sports'
+ORDER BY employee_id;#the outside order by overwrites the inside order by
+
+#partition by into the over() clause divides rows into groups or partitions
+#that share the same values for the partition expression
+
+select employee_id,first_name,hire_date,department,
+row_number() over(partition by department) as Row_N
+from employees
+order by department asc;#for each partition starts again from one
+
+SELECT employee_id, first_name, department, hire_date,
+row_number()  over(PARTITION BY department
+				   order by hire_date) AS Row_N
+FROM employees
+ORDER BY department ASC;#starts from the first hired employee for each department
+
+#row_number() is a window function
+
+WITH customer_purchase AS (
+	SELECT s.customer_id, c.customer_name, c.segment,COUNT(*) AS purchase_count
+	FROM sales s JOIN customers c ON s.customer_id = c.customer_id
+	GROUP BY s.customer_id, c.customer_name, c.segment
+	ORDER BY customer_id)
+
+
+select customer_id,customer_name,segment,purchase_count,
+row_number() over(order by purchase_count desc) as Row_N
+from customer_purchase
+order by Row_N,purchase_count desc;
+
+
+
+
+
+
+WITH customer_purchase AS (
+	SELECT s.customer_id, c.customer_name, c.segment,COUNT(*) AS purchase_count
+	FROM sales s JOIN customers c ON s.customer_id = c.customer_id
+	GROUP BY s.customer_id, c.customer_name, c.segment
+	ORDER BY customer_id)
+
+-- Exercise 5.1: Number each customer by their customer segment
+-- and by how many purchases they've made in descending order
+SELECT customer_id, customer_name, segment, purchase_count,
+row_number() OVER (partition by segment
+				   order by purchase_count desc) AS Row_N
+FROM customer_purchase
+ORDER BY segment, purchase_count DESC;
+
+
+-- 6.1: Retrieve all employees first name, department, salary
+-- and the salary after that employee
+select first_name,department,salary,
+lead(salary) over() as next_salary
+from employees;
+
+-- 6.2: Retrieve all employees first name, department, salary
+-- and the salary before that employee
+select first_name,department,salary,
+lag(salary) over() as previous_salary
+from employees;
+
+
+select first_name,department,salary,
+lead(salary) over(order by salary desc) as next_salary,
+salary-lead(salary) over(order by salary desc) as salary_difference
+from employees;
+
+
+-- Exercise 6.2: Retrieve all employees first name, department, salary
+-- and the salary after that employee for each department in descending order
+-- of their salaries. Call the new column cloest_lowest_salary 
+SELECT first_name, department, salary,
+lead(salary) OVER (partition by department
+				   order by salary desc) closest_lowest_salary
+FROM employees;
+
+-- What do you think this query will return?
+SELECT first_name, department, salary,
+LEAD(salary, 1) OVER (ORDER BY salary DESC) closest_salary,
+LEAD(salary, 2) OVER (ORDER BY salary DESC) next_cloest_salary
+FROM employees
+WHERE department = 'Clothing';
+
+
+
+#first_value() returns the first value in an ordered partition of a result set
+
+-- 7.1: Retrieve the first_name, last_name, department, and 
+-- hire_date of all employees. Add a new column called first_emp_date 
+-- that returns the hire date of the first hired employee
+select first_name,last_name,department,hire_date,
+first_value(hire_date) over(order by hire_date ) first_emp_date
+from employees;
+
+
+select *,age(hire_date,first_emp_date) as hiredate_diff
+from(
+select first_name,last_name,department,hire_date,
+first_value(hire_date) over(order by hire_date ) first_emp_date
+from employees) a
+order by hire_date;
+
+SELECT first_name, last_name, department, hire_date,
+first_value(hire_date) OVER (partition by department
+					 ORDER BY hire_date) AS first_emp_date
+FROM employees;
+
+SELECT *, age(hire_date,first_emp_date)as hiredate_diff
+FROM (
+SELECT first_name, last_name, department, hire_date,
+first_value(hire_date) OVER (partition by department
+							 ORDER BY hire_date) AS first_emp_date
+FROM employees) a;
+
+SELECT first_name, email, department, salary,
+MAX(salary) OVER(PARTITION BY department
+				 ORDER BY salary DESC) first_salary
+FROM employees;
+
+
+
+
+select *,first_salary-salary salary_diff
+from(
+SELECT first_name, email, department, salary,
+MAX(salary) OVER(PARTITION BY department
+				 ORDER BY salary DESC) first_salary
+FROM employees) a;
+
+
+we can't talk about window functions without the over() clause
+
+#data governance:
+#1)data integrity
+#2)data accessibility
+#3)data availability
+
+-------------------------------------------------------------------------------------------------
+--a start routine is a usual fixed action or a series of actions repeated periodically
+--a start routine can either be a stored procedure or user define action
+--stored procedures are difficult to debug
+
+-- 2.2: Drop procedure if it exists
+drop procedure if exists select_employees;
+
+-- 2.3: Create a stored procedure to retrieve the first 500 employees
+delimiter $$
+create procedure select_employees()
+begin
+
+	select * from employees
+    limit 500;
+
+end $$
+
+delimiter ;
+-- 2.4: Call the procedure
+call select_employees;
+
+
+
+
+
+
+
+
+
+
+
+
+-- create new user
+create user 'user1'@'localhost' identified by 'coursera2022';
+
+-- grant execute permissions
+grant execute on procedure projectdb.show_depts to 'user1'@'localhost';
+
+-- grant select permission to  user1
+grant select on projectdb.departments to 'user1'@'localhost';
+-- 3.1: Drop procedure if it exists
+DROP PROCEDURE IF EXISTS show_depts;
+
+-- 3.2: Create a stored procedure to retrieve all data 
+-- in the departments table
+DELIMITER $$
+CREATE definer=user1@localhost PROCEDURE show_depts()
+
+
+sql security definer
+BEGIN
+SELECT * FROM departments;
+END$$
+
+delimiter ;
+-- 3.3: Call the procedure
+CALL show_depts();
+
+
+DROP PROCEDURE IF EXISTS emp_full_details;
+
+delimiter $$
+create procedure emp_full_details(in p_emp_id integer)
+begin
+select e.employee_id,e.first_name,e.last_name,e.hire_date,e.salary,r.region,r.country
+from employees e join regions r on e.region_id=r.region_id
+where employee_id=p_emp_id;
+
+end$$
+
+delimiter ;
+
+CALL emp_full_details(100);
+
+
+-- 6.2: Drop the procedure if it exists
+DROP PROCEDURE IF EXISTS orders_year;
+
+-- 6.3: Create a procedure that returns details of sales
+-- and customers given the year and product category
+delimiter $$ 
+create procedure orders_year(in p_year integer,p_category varchar(50))
+begin
+	select s.order_date,s.customer_id,c.customer_name,c.state,s.category,s.quantity
+	from sales s join customers c on s.customer_id=c.customer_id
+	where year(s.order_date)=p_year and s.category=p_category;
+end$$
+
+delimiter ;
+
+-- 6.4: Call the procedure for the year 2015 and Furniture category
+call orders_year(2015,'Furniture');
+
+-- 8.3: Write the query to select into variables region and country
+select region,country 
+into @region,@country
+from regions 
+where region_id=1;
+
+-- 8.4: Retrieve the data in the variables
+select @region,@country;
+
+--------------------------------------------------------------------------
+SELECT firstname,lastname,invoiceid,invoicedate,total
+from invoice,customer
+where billingcountry='USA' and invoice.customerid=customer.CustomerId
+
+
+
+
+
+-- outer join only rows that do not match
+--full join->all rows from tables are included whether or not they match
+
+
+
+
+
